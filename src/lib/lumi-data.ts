@@ -83,6 +83,20 @@ export const blankLearner: LearnerState = {
   support: { dyslexia: false, largerText: false, highContrast: false, reducedMotion: false, sound: true, simpleLanguage: false },
 };
 
+export const hydrateLearner = (value: unknown): LearnerState => {
+  if (!value || typeof value !== "object") return blankLearner;
+  const parsed = value as Partial<LearnerState>;
+  return {
+    ...blankLearner,
+    ...parsed,
+    goals: Array.isArray(parsed.goals) ? parsed.goals : [],
+    completedActivities: Array.isArray(parsed.completedActivities) ? parsed.completedActivities : [],
+    savedWords: Array.isArray(parsed.savedWords) ? parsed.savedWords : [],
+    skills: Array.isArray(parsed.skills) && parsed.skills.length ? parsed.skills : defaultSkills,
+    support: { ...blankLearner.support, ...(parsed.support || {}) },
+  };
+};
+
 export const levelNames: LevelName[] = ["Starter", "Explorer", "Reader", "Word Builder", "Story Seeker", "Language Master"];
 export const getLevel = (xp: number): LevelName => levelNames[Math.min(Math.floor(xp / 500), levelNames.length - 1)];
 export const getLevelProgress = (xp: number) => ((xp % 500) / 500) * 100;
@@ -137,11 +151,11 @@ export const lessons = [
   { id: "main-idea", title: "Main Idea Finder", skill: "Reading", duration: "6 min", level: "Growing", description: "Find the sentence that holds a paragraph together.", icon: "Highlighter", color: "blue", reward: 50 },
 ];
 
-export const badges = [
-  { name: "First Word", detail: "Learn your first word", icon: "🌱", unlocked: true },
-  { name: "7 Day Streak", detail: "Practice for seven days", icon: "🔥", unlocked: false },
-  { name: "100 Words", detail: "Learn one hundred words", icon: "💬", unlocked: false },
-  { name: "Reading Explorer", detail: "Complete five stories", icon: "🧭", unlocked: false },
-  { name: "Vocabulary Hero", detail: "Complete a vocabulary lesson", icon: "⭐", unlocked: false },
-  { name: "Perfect Quiz", detail: "Score 100% on a quiz", icon: "🏆", unlocked: false },
+export const getBadges = (learner: Pick<LearnerState, "wordsLearned" | "streak" | "storiesCompleted" | "completedActivities" | "quizScore">) => [
+  { name: "First Word", detail: "Learn your first word", icon: "🌱", unlocked: learner.wordsLearned > 0 },
+  { name: "7 Day Streak", detail: "Practice for seven days", icon: "🔥", unlocked: learner.streak >= 7 },
+  { name: "100 Words", detail: "Learn one hundred words", icon: "💬", unlocked: learner.wordsLearned >= 100 },
+  { name: "Reading Explorer", detail: "Complete five stories", icon: "🧭", unlocked: learner.storiesCompleted >= 5 },
+  { name: "Vocabulary Hero", detail: "Complete a vocabulary lesson", icon: "⭐", unlocked: learner.completedActivities.some(id => ["vocabulary-foundations", "daily-review", "confidence-boost", "word-detective", "vocabulary-in-context"].includes(id)) },
+  { name: "Perfect Quiz", detail: "Score 100% on a quiz", icon: "🏆", unlocked: learner.quizScore >= 100 },
 ];
