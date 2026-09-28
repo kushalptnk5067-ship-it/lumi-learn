@@ -1,11 +1,14 @@
 {
+  "id": "/",
   "name": "LumiLearn — Learn. Play. Grow.",
   "short_name": "LumiLearn",
   "description": "An adaptive literacy companion by Trybyte.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F7F4EC",
   "theme_color": "#12395B",
   "orientation": "portrait-primary",
+  "categories": ["education", "kids", "learning"],
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }
