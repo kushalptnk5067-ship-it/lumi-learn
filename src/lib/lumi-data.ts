@@ -9,6 +9,18 @@ export interface SkillProfile {
   icon: string;
 }
 
+export type SubscriptionStatus = "free" | "active" | "pending" | "expired" | "cancelled";
+export type EntitlementVerification = "unverified" | "pending" | "verified";
+export interface SubscriptionState {
+  status: SubscriptionStatus;
+  verification: EntitlementVerification;
+  provider?: "google_play";
+  productId?: string;
+  expiresAt?: string;
+  purchaseToken?: string;
+  updatedAt?: string;
+}
+
 export interface LearnerState {
   name: string;
   grade: string;
@@ -34,6 +46,7 @@ export interface LearnerState {
     sound: boolean;
     simpleLanguage: boolean;
   };
+  subscription: SubscriptionState;
 }
 
 export const defaultSkills: SkillProfile[] = [
@@ -61,6 +74,7 @@ export const demoLearner: LearnerState = {
   savedWords: ["curious", "observe", "brilliant"],
   skills: defaultSkills,
   support: { dyslexia: false, largerText: false, highContrast: false, reducedMotion: false, sound: true, simpleLanguage: false },
+  subscription: { status: "free", verification: "unverified" },
 };
 
 export const blankLearner: LearnerState = {
@@ -81,6 +95,7 @@ export const blankLearner: LearnerState = {
   savedWords: [],
   skills: defaultSkills,
   support: { dyslexia: false, largerText: false, highContrast: false, reducedMotion: false, sound: true, simpleLanguage: false },
+  subscription: { status: "free", verification: "unverified" },
 };
 
 export const hydrateLearner = (value: unknown): LearnerState => {
@@ -94,6 +109,7 @@ export const hydrateLearner = (value: unknown): LearnerState => {
     savedWords: Array.isArray(parsed.savedWords) ? parsed.savedWords : [],
     skills: Array.isArray(parsed.skills) && parsed.skills.length ? parsed.skills : defaultSkills,
     support: { ...blankLearner.support, ...(parsed.support || {}) },
+    subscription: { ...blankLearner.subscription, ...(parsed.subscription || {}) },
   };
 };
 
